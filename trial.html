@@ -39,9 +39,56 @@
 	<meta name="twitter:site" content="@IshiiStpete" />
 	<meta name="twitter:title" content="earthquake past one month in japan ">
 	<meta name="twitter:image" content="https://raw.githubusercontent.com/tztechno/tz_js_20240217_leaflet/main/now.png">
+
+<script>
+var num = 0;
+var watch_id;
+
+function test() {
+    watch_id = navigator.geolocation.watchPosition(test2, function(e) { alert(e.message); }, {"enableHighAccuracy": true, "timeout": 20000, "maximumAge": 2000});
+}
+
+function clear() {
+    navigator.geolocation.clearWatch(watch_id);
+}
+
+function test2(position) {
+
+    var geo_text = “latitude:” + position.coords.latitude + "\n";
+    geo_text += “longitude:” + position.coords.longitude + "\n";
+    geo_text += “altitude:” + position.coords.altitude + "\n";
+    geo_text += “accuracy:” + position.coords.accuracy + "\n";
+    geo_text += “altitude_accuracy:” + position.coords.altitudeAccuracy  + "\n";
+    geo_text += “heading:” + position.coords.heading + "\n";
+    geo_text += “speed:” + position.coords.speed + "\n";
+
+    var date = new Date(position.timestamp);
+
+    geo_text += “time:” + date.toLocaleString() + "\n";
+    geo_text += “count:” + (++num) + "\n";
+
+    document.getElementById('position_view').innerHTML = geo_text;
+
+}
+</script>
+
+
+
+
+
+
+
 	
 </head>
 <body>
+
+<button onclick="test()">test</button>
+<button onclick="clear()">clear</button>
+
+<pre id="position_view"></pre>
+
+
+	
  <!-- set the div element containing the map -->
  <div id="mapid" style="width: 100%; height: 100%; padding: 0; margin: 0;"></div>
 
