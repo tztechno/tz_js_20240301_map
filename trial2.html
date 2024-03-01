@@ -34,6 +34,9 @@ function clear() {
     navigator.geolocation.clearWatch(watch_id);
 }
 
+var lat0 = 35.6895; // デフォルトの緯度
+var lon0 = 139.6917; // デフォルトの経度    
+
 function test2(position) {
     var lat0 = position.coords.latitude;
     var lon0 = position.coords.longitude;
