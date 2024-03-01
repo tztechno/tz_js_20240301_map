@@ -9,7 +9,7 @@
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <style>
         #map {
-            height: 700px;
+            height: 600px;
             width: 100%;
         }
     </style>
@@ -38,13 +38,13 @@ function test2(position) {
     var lat0 = position.coords.latitude;
     var lon0 = position.coords.longitude;
 
-    var geo_text = "latitude:" + lat0 + "\n";
-    geo_text += "longitude:" + lon0 + "\n";
-    geo_text += "altitude:" + position.coords.altitude + "\n";
-    geo_text += "accuracy:" + position.coords.accuracy + "\n";
-    geo_text += "altitude_accuracy:" + position.coords.altitudeAccuracy  + "\n";
-    geo_text += "heading:" + position.coords.heading + "\n";
-    geo_text += "speed:" + position.coords.speed + "\n";
+    var geo_text = "Latitude:" + lat0 + "\n";
+    geo_text += "Longitude:" + lon0 + "\n";
+    geo_text += "Altitude:" + position.coords.altitude + "\n";
+    geo_text += "Accuracy:" + position.coords.accuracy + "\n";
+    geo_text += "Altitude_accuracy:" + position.coords.altitudeAccuracy  + "\n";
+    geo_text += "Heading:" + position.coords.heading + "\n";
+    geo_text += "Speed:" + position.coords.speed + "\n";
 
     var date = new Date(position.timestamp);
     geo_text += "time:" + date.toLocaleString() + "\n";
