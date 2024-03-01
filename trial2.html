@@ -9,7 +9,7 @@
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <style>
         #map {
-            height: 400px;
+            height: 100%;
             width: 100%;
         }
     </style>
@@ -53,7 +53,7 @@ function test2(position) {
     document.getElementById('position_view').innerHTML = geo_text;
 
     // Leafletを使用して地図を作成
-    var map = L.map('map').setView([lat0, lon0], 12); // [緯度, 経度], ズームレベル
+    var map = L.map('map').setView([lat0, lon0],15); // [緯度, 経度], ズームレベル
 
     // OpenStreetMapのタイルレイヤーを追加
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
