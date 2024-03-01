@@ -24,8 +24,6 @@
 <div id="map"></div>
 
 <script>
-/////////////////////////
-
 var num = 0;
 var watch_id;
 
@@ -38,9 +36,11 @@ function clear() {
 }
 
 function test2(position) {
+    var lat0 = position.coords.latitude;
+    var lon0 = position.coords.longitude;
 
-    var geo_text = "緯度:" + position.coords.latitude + "\n";
-    geo_text += "経度:" + position.coords.longitude + "\n";
+    var geo_text = "緯度:" + lat0 + "\n";
+    geo_text += "経度:" + lon0 + "\n";
     geo_text += "高度:" + position.coords.altitude + "\n";
     geo_text += "位置精度:" + position.coords.accuracy + "\n";
     geo_text += "高度精度:" + position.coords.altitudeAccuracy  + "\n";
@@ -48,22 +48,10 @@ function test2(position) {
     geo_text += "速度:" + position.coords.speed + "\n";
 
     var date = new Date(position.timestamp);
-
     geo_text += "取得時刻:" + date.toLocaleString() + "\n";
     geo_text += "取得回数:" + (++num) + "\n";
 
     document.getElementById('position_view').innerHTML = geo_text;
-
-    let lat0=position.coords.latitude;
-    let lon0=position.coords.longitude; 
-    console.log(lat0,lon0);
-    
-}
-
-
-
-    
-//////////////////////////
 
     // Leafletを使用して地図を作成
     var map = L.map('map').setView([lat0, lon0], 12); // [緯度, 経度], ズームレベル
@@ -76,7 +64,7 @@ function test2(position) {
     // マーカーを追加
     var marker = L.marker([lat0, lon0]).addTo(map);
     marker.bindPopup("<b>'HERE!</b>").openPopup();
-    
+}
 </script>
 
 </body>
