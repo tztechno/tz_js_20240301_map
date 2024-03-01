@@ -1,21 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
-    
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Map with Pin</title>
+    <title>Map with Geolocation</title>
     <!-- Leafletのスクリプトを読み込む -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <style>
         #map {
-            height: 100%;
+            height: 400px;
             width: 100%;
         }
     </style>
 </head>
-    
 <body>
 
 <!-- 地図を表示するための要素 -->
@@ -66,12 +64,16 @@ function test2(position) {
     var marker = L.marker([lat0, lon0]).addTo(map);
     marker.bindPopup("<b>'HERE!</b>").openPopup();
 }
+
+// HTML要素が読み込まれた後にテスト関数を呼び出す
+document.addEventListener("DOMContentLoaded", function() {
+    test();
+});
+
 </script>
 
 <!-- ボタンを追加してテスト関数を呼び出す -->
-<button onclick="test()">Start Tracking</button>
 <button onclick="clear()">Stop Tracking</button>
 
 </body>
-    
 </html>
