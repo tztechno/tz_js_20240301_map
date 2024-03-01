@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+    
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,14 +15,14 @@
         }
     </style>
 </head>
+    
 <body>
-    
-<button onclick="test()">test</button>
-<button onclick="clear()">clear</button>
-<pre id="position_view"></pre>
-    
+
 <!-- 地図を表示するための要素 -->
 <div id="map"></div>
+
+<!-- 位置情報表示用の要素 -->
+<div id="position_view"></div>
 
 <script>
 var num = 0;
@@ -67,5 +68,10 @@ function test2(position) {
 }
 </script>
 
+<!-- ボタンを追加してテスト関数を呼び出す -->
+<button onclick="test()">Start Tracking</button>
+<button onclick="clear()">Stop Tracking</button>
+
 </body>
+    
 </html>
