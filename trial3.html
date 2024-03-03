@@ -1,8 +1,28 @@
   
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="utf-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Map with Geolocation</title>
+    <!-- Leafletのスクリプトを読み込む -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <style>
+        #map {
+            height: 700px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 地図を表示するための要素 -->
+<div id="map"></div>
+
+<!-- 位置情報表示用の要素 -->
+<div id="position_view"></div>
+
 <script>
 var num = 0;
 var watch_id;
@@ -15,10 +35,15 @@ function clear() {
     navigator.geolocation.clearWatch(watch_id);
 }
 
-function test2(position) {
+var lat0 = 35.6895; // デフォルトの緯度
+var lon0 = 139.6917; // デフォルトの経度    
 
-    var geo_text = "緯度:" + position.coords.latitude + "\n";
-    geo_text += "経度:" + position.coords.longitude + "\n";
+function test2(position) {
+    var lat0 = position.coords.latitude;
+    var lon0 = position.coords.longitude;
+
+    var geo_text = "緯度:" + lat0 + "\n";
+    geo_text += "経度:" + lon0 + "\n";
     geo_text += "高度:" + position.coords.altitude + "\n";
     geo_text += "位置精度:" + position.coords.accuracy + "\n";
     geo_text += "高度精度:" + position.coords.altitudeAccuracy  + "\n";
@@ -26,21 +51,33 @@ function test2(position) {
     geo_text += "速度:" + position.coords.speed + "\n";
 
     var date = new Date(position.timestamp);
-
     geo_text += "取得時刻:" + date.toLocaleString() + "\n";
     geo_text += "取得回数:" + (++num) + "\n";
 
     document.getElementById('position_view').innerHTML = geo_text;
 
+    // Leafletを使用して地図を作成
+    var map = L.map('map').setView([lat0, lon0],15); // [緯度, 経度], ズームレベル
+
+    // OpenStreetMapのタイルレイヤーを追加
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    // マーカーを追加
+    var marker = L.marker([lat0, lon0]).addTo(map);
+    marker.bindPopup("<b>HERE!</b>").openPopup();
 }
+
+// HTML要素が読み込まれた後にテスト関数を呼び出す
+document.addEventListener("DOMContentLoaded", function() {
+    test();
+});
+
 </script>
-</head>
-<body>
 
-<button onclick="test()">test</button>
-<button onclick="clear()">clear</button>
-
-<pre id="position_view"></pre>
+<!-- ボタンを追加してテスト関数を呼び出す -->
+<button onclick="clear()">Stop Tracking</button>
 
 </body>
 </html>
