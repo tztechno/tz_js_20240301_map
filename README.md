@@ -10,3 +10,4 @@ https://tztechno.github.io/tz_js_20240301_map/trial2.html
 
 https://tztechno.github.io/tz_js_20240301_map/index.html
 
+https://tztechno.github.io/tz_js_20240301_map/trial3.html
