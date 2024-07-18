@@ -1,4 +1,6 @@
+  
 <!DOCTYPE html>
+<!-- trial2 ===== trial3 -->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -41,17 +43,17 @@ function test2(position) {
     var lat0 = position.coords.latitude;
     var lon0 = position.coords.longitude;
 
-    var geo_text = "Latitude:" + lat0 + "\n";
-    geo_text += "Longitude:" + lon0 + "\n";
-    geo_text += "Altitude:" + position.coords.altitude + "\n";
-    geo_text += "Accuracy:" + position.coords.accuracy + "\n";
-    geo_text += "Altitude_accuracy:" + position.coords.altitudeAccuracy  + "\n";
-    geo_text += "Heading:" + position.coords.heading + "\n";
-    geo_text += "Speed:" + position.coords.speed + "\n";
+    var geo_text = "緯度:" + lat0 + "\n";
+    geo_text += "経度:" + lon0 + "\n";
+    geo_text += "高度:" + position.coords.altitude + "\n";
+    geo_text += "位置精度:" + position.coords.accuracy + "\n";
+    geo_text += "高度精度:" + position.coords.altitudeAccuracy  + "\n";
+    geo_text += "移動方向:" + position.coords.heading + "\n";
+    geo_text += "速度:" + position.coords.speed + "\n";
 
     var date = new Date(position.timestamp);
-    geo_text += "time:" + date.toLocaleString() + "\n";
-    geo_text += "count:" + (++num) + "\n";
+    geo_text += "取得時刻:" + date.toLocaleString() + "\n";
+    geo_text += "取得回数:" + (++num) + "\n";
 
     document.getElementById('position_view').innerHTML = geo_text;
 
@@ -65,7 +67,7 @@ function test2(position) {
 
     // マーカーを追加
     var marker = L.marker([lat0, lon0]).addTo(map);
-    marker.bindPopup("<b>HERE!</b>").openPopup();
+    marker.bindPopup("<b>I'M HERE! HELP!</b>").openPopup();
 }
 
 // HTML要素が読み込まれた後にテスト関数を呼び出す
