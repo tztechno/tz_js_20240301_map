@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Map with Geolocation</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <style>
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        #container {
+            display: flex;
+            height: 100%;
+        }
+
+        #map-container {
+            position: relative;
+            height: 100%;
+            width: 70%;
+        }
+
+        #map {
+            height: 100%;
+            width: 100%;
+        }
+
+        #sidebar {
+            width: 30%;
+            padding: 10px;
+            overflow-y: auto;
+        }
+
+        #controls {
+            margin-bottom: 10px;
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.65);
+        }
+
+        #buttons {
+            margin-bottom: 10px;
+        }
+
+        #results {
+            margin-bottom: 10px;
+        }
+
+        #position_view {
+            margin-bottom: 10px;
+        }
+
+        #data_log {
+            height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            padding: 5px;
+        }
+    </style>
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@IshiiStpete" />
+    <meta name="twitter:title" content="I'M HERE! HELP!">
+    <meta name="twitter:image" content="https://raw.githubusercontent.com/tztechno/vercel_map/main/here.png">
+</head>
+
+<body>
+    <div id="container">
+        <div id="map-container">
+            <div id="map"></div>
+        </div>
+        <div id="sidebar">
+            <div id="controls">
+                <div id="buttons">
+                    <button id="startBtn">Start Tracking</button>
+                    <button id="stopBtn" disabled>Stop Tracking</button>
+                </div>
+                <div id="results"></div>
+            </div>
+            <div id="position_view"></div>
+            <div id="data_log"></div>
+        </div>
+    </div>
+
+    <script>
+        var num = 0;
+        var watch_id;
+        var map;
+        var polyline;
+        var markers = [];
+        var positions = [];
+        var totalDistance = 0;
+        var intervalId;
+        var currentPositionMarker;
+
+        function initMap() {
+            if (map) {
+                map.remove();
+            }
+            map = L.map('map').setView([35.6895, 139.6917], 15);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+            polyline = L.polyline([], { color: 'blue' }).addTo(map);
+            currentPositionMarker = L.circleMarker([0, 0], {
+                color: 'red',
+                fillColor: '#f03',
+                fillOpacity: 0.8,
+                radius: 2.5
+            }).addTo(map);
+
+            // 地図のサイズを更新
+            map.invalidateSize();
+        }
+    function startTracking() {
+        watch_id = navigator.geolocation.watchPosition(updatePosition, handleError, { "enableHighAccuracy": true, "timeout": 20000, "maximumAge": 2000 });
+
+        // 最初のデータ取得を即座に行う
+        recordPosition();
+
+        // その後、3秒後から3秒ごとにデータ取得を行う
+        setTimeout(function () {
+            intervalId = setInterval(recordPosition, 3000);
+        }, 3000);
+
+        document.getElementById('startBtn').disabled = true;
+        document.getElementById('stopBtn').disabled = false;
+        document.getElementById('results').innerHTML = '';
+        document.getElementById('data_log').innerHTML = '';
+        markers.forEach(marker => map.removeLayer(marker));
+        markers = [];
+        positions = [];
+        polyline.setLatLngs([]);
+        totalDistance = 0;
+        num = 0;
+    }
+
+    let lastPosition = null;
+    let errorCount = 0;
+
+    function recordPosition() {
+        navigator.geolocation.getCurrentPosition(function (position) {
+            var lat = position.coords.latitude;
+            var lon = position.coords.longitude;
+
+            // 前回の位置と同じ場合はスキップ
+            if (lastPosition && lastPosition.latitude === lat && lastPosition.longitude === lon) {
+                console.log("Position unchanged, skipping...");
+                return;
+            }
+
+            lastPosition = { latitude: lat, longitude: lon };
+            positions.push([lat, lon]);
+            var marker = L.circleMarker([lat, lon], {
+                color: 'blue',
+                fillColor: '#30f',
+                fillOpacity: 0.8,
+                radius: 2.5
+            }).addTo(map);
+            markers.push(marker);
+            updatePolyline(lat, lon);
+            if (positions.length > 1) {
+                var lastIndex = positions.length - 1;
+                var distance = calculateDistance(positions[lastIndex - 1], positions[lastIndex]);
+                totalDistance += distance;
+                document.getElementById('results').innerHTML = `総移動距離: ${(totalDistance * 100000).toFixed(0)} cm`;
+            }
+
+            // データログの追加
+            num++;
+            var logEntry = `Point ${num}: ${new Date().toLocaleTimeString()} - Lat: ${lat.toFixed(6)}, Lon: ${lon.toFixed(6)}`;
+            var logDiv = document.getElementById('data_log');
+            logDiv.innerHTML += logEntry + '<br>';
+            logDiv.scrollTop = logDiv.scrollHeight;
+
+            // エラーカウントをリセット
+            errorCount = 0;
+        }, function (error) {
+            errorCount++;
+            console.warn("Geolocation error:", error);
+            var logDiv = document.getElementById('data_log');
+            if (errorCount % 5 === 1) {  // 5回に1回だけエラーメッセージを表示
+                logDiv.innerHTML += `Warning (${errorCount}): ${error.message}. Accuracy: ${error.code}. Time: ${new Date().toLocaleTimeString()}<br>`;
+                logDiv.scrollTop = logDiv.scrollHeight;
+            }
+        }, {
+            enableHighAccuracy: true,
+            timeout: 2500,  // タイムアウトを2.5秒に短縮
+            maximumAge: 0
+        });
+    }
+
+        function stopTracking() {
+            navigator.geolocation.clearWatch(watch_id);
+            clearInterval(intervalId);
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('stopBtn').disabled = true;
+            calculateTotalDistance();
+        }
+
+        function updatePosition(position) {
+            var lat = position.coords.latitude;
+            var lon = position.coords.longitude;
+
+            var geo_text = `緯度: ${lat}<br>経度: ${lon}<br>高度: ${position.coords.altitude}<br>位置精度: ${position.coords.accuracy}<br>高度精度: ${position.coords.altitudeAccuracy}<br>移動方向: ${position.coords.heading}<br>速度: ${position.coords.speed}<br>取得時刻: ${new Date(position.timestamp).toLocaleString()}<br>取得回数: ${num}`;
+
+            document.getElementById('position_view').innerHTML = geo_text;
+
+            map.setView([lat, lon], 15);
+            updatePolyline(lat, lon);
+            currentPositionMarker.setLatLng([lat, lon]);
+        }
+        
+        function updatePolyline(lat, lon) {
+            polyline.addLatLng([lat, lon]);
+        }
+
+        function calculateTotalDistance() {
+            document.getElementById('results').innerHTML = `総移動距離: ${(totalDistance * 100000).toFixed(0)} cm`;
+        }
+
+        function calculateDistance(pos1, pos2) {
+            const R = 6371;
+            const dLat = (pos2[0] - pos1[0]) * Math.PI / 180;
+            const dLon = (pos2[1] - pos1[1]) * Math.PI / 180;
+            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(pos1[0] * Math.PI / 180) * Math.cos(pos2[0] * Math.PI / 180) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            return R * c;
+        }
+
+        function handleError(error) {
+            alert('Error: ' + error.message);
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            initMap();
+            document.getElementById('startBtn').addEventListener('click', startTracking);
+            document.getElementById('stopBtn').addEventListener('click', stopTracking);
+
+            // ウィンドウのリサイズ時に地図のサイズを更新
+            window.addEventListener('resize', function () {
+                map.invalidateSize();
+            });
+        });
+    </script>
+
+</body>
+
+</html>
